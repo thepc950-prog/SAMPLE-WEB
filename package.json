@@ -1,0 +1,16 @@
+{
+  "name": "vuln-shop",
+  "version": "1.0.0",
+  "description": "Intentionally vulnerable e-commerce demo — for testing the ButterflyX scanner ONLY. Never deploy.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.16.4",
+    "lodash": "4.17.20",
+    "marked": "0.3.5",
+    "jsonwebtoken": "8.5.1",
+    "underscore": "1.9.1"
+  }
+}
