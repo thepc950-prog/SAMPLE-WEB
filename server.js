@@ -1,24 +1,32 @@
-/*
-  VULN-SHOP — intentionally vulnerable e-commerce demo.
-  Every issue in this codebase is deliberate, for testing the ButterflyX scanner.
-  DO NOT deploy this anywhere or connect it to real data.
-*/
+// Mini vulnerable shop — intentionally insecure, for ButterflyX scanner testing ONLY.
 const express = require("express");
-const cors = require("cors");
-
+const crypto = require("crypto");
 const app = express();
-
-// Wide-open CORS with credentials: any website can call this API from a browser.
-app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-const products = require("./routes/products");
-const cart = require("./routes/cart");
-const auth = require("./routes/auth");
+const PRODUCTS = [
+  { id: 1, name: "Widget", price: 9.99 },
+  { id: 2, name: "Gadget", price: 24.5 },
+];
 
-app.use("/api/products", products);
-app.use("/api/cart", cart);
-app.use("/api/auth", auth);
+app.get("/products", (_req, res) => res.json(PRODUCTS));
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`vuln-shop listening on http://localhost:${PORT}`));
+// SQL built from user input — SQL injection.
+app.get("/search", (req, res) => {
+  res.json(`SELECT * FROM products WHERE name LIKE '%${req.query.q}%'`);
+});
+
+// eval on user input — remote code execution.
+app.post("/coupon", (req, res) => {
+  res.json({ discount: eval(req.body.coupon) });
+});
+
+// MD5 hashing + hardcoded admin password.
+const ADMIN_HASH = crypto.createHash("md5").update("admin123").digest("hex");
+app.post("/login", (req, res) => {
+  const hash = crypto.createHash("md5").update((req.body || {}).password || "").digest("hex");
+  if (hash !== ADMIN_HASH) return res.status(401).json({ error: "Invalid credentials" });
+  res.json({ ok: true });
+});
+
+app.listen(4000, () => console.log("mini vuln-shop on http://localhost:4000"));
