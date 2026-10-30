@@ -3,6 +3,7 @@ const express = require("express");
 const crypto = require("crypto");
 const app = express();
 app.use(express.json());
+app.use(express.static("public"));
 
 const PRODUCTS = [
   { id: 1, name: "Widget", price: 9.99 },

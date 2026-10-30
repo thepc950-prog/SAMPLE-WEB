@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mini Shop</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #000; color: #eee; font-family: system-ui, sans-serif; min-height: 100vh; }
+  header { padding: 24px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+  h1 { font-size: 20px; font-weight: 600; }
+  .cart { border: 1px solid #333; border-radius: 8px; padding: 8px 14px; color: #eee; cursor: pointer; background: #111; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px; }
+  .search { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #333; background: #111; color: #eee; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 24px; }
+  .card { border: 1px solid #222; border-radius: 12px; padding: 16px; background: #0a0a0a; }
+  .name { font-size: 15px; font-weight: 600; }
+  .price { margin-top: 6px; color: #bbb; font-size: 13px; }
+  .buy { margin-top: 12px; width: 100%; padding: 8px; border: none; border-radius: 8px; background: #fff; color: #000; font-weight: 600; cursor: pointer; }
+  .empty { color: #777; margin-top: 24px; text-align: center; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Mini Shop</h1>
+    <button class="cart">Cart</button>
+  </header>
+  <main>
+    <input class="search" placeholder="Search products…" oninput="render(this.value)" />
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>No products match.</p>
+  </main>
+  <script>
+    let products = [];
+    fetch("/products").then((r) => r.json()).then((data) => { products = data; render(""); });
+    function render(q) {
+      const list = products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
+      document.getElementById("grid").innerHTML = list
+        .map((p) => `<div class="card"><div class="name">${p.name}</div><div class="price">$${p.price.toFixed(2)}</div><button class="buy">Add to cart</button></div>`)
+        .join("");
+      document.getElementById("empty").hidden = list.length > 0;
+    }
+  </script>
+</body>
+</html>
